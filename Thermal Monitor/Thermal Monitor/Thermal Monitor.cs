@@ -23,7 +23,7 @@ namespace Thermal_Monitor
                 return;
 
             thermalMass = (float)part.thermalMass;
-            flux = (float)(part.thermalConductionFlux + part.thermalConvectionFlux + part.thermalRadiationFlux);
+            flux = (float)(part.thermalConductionFlux + part.thermalConvectionFlux + part.thermalRadiationFlux + part.thermalInternalFlux);
             temp = (float)(part.temperature);
         }
     }
