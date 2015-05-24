@@ -8,22 +8,17 @@ namespace Thermal_Monitor
 {
     public class ThermalMonitor : PartModule
     {
-        [KSPField(guiActive = true, guiActiveEditor = false, guiName = "Temperature")]
+        [KSPField(guiActive = true, guiActiveEditor = false, guiName = "Temperature", guiUnits = " K", guiFormat = "F2")]
         public float temp;
-        [KSPField(guiActive = true, guiActiveEditor = false, guiName = "Flux")]
-        public float flux;
-        [KSPField(guiActive = true, guiActiveEditor = false, guiName = "Thermal Mass")]
-        public float thermalMass;
+        [KSPField(guiActive = true, guiActiveEditor = false, guiName = "Degrees / s", guiUnits = " K", guiFormat = "F2")]
+        public float heatingRate;
         
-        
-
         public void Update()
         {
             if (!HighLogic.LoadedSceneIsFlight)
                 return;
 
-            thermalMass = (float)part.thermalMass;
-            flux = (float)(part.thermalConductionFlux + part.thermalConvectionFlux + part.thermalRadiationFlux + part.thermalInternalFlux);
+            heatingRate = (float)((part.thermalConductionFlux + part.thermalConvectionFlux + part.thermalRadiationFlux + part.thermalInternalFlux) / part.thermalMass);
             temp = (float)(part.temperature);
         }
     }
