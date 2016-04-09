@@ -30,6 +30,8 @@ namespace Thermal_Monitor
             coreModule = part.Modules.GetModules<ModuleCoreHeat>().FirstOrDefault();
         }
 
+        // update monitors the toggle state
+        // why didn't I do this with an event? Should check that
         public void Update()
         {
             if (fieldsVisible != fieldsWasVisible)
@@ -42,6 +44,10 @@ namespace Thermal_Monitor
             }
         }
 
+        /// <summary>
+        /// Make it so values don't start from zero causing a few seconds of unreliable output
+        /// </summary>
+        /// <returns></returns>
         public IEnumerator InitValues()
         {
             while (!HighLogic.LoadedSceneIsFlight || vessel.HoldPhysics)
@@ -55,15 +61,18 @@ namespace Thermal_Monitor
             internalRate = skinRate = coreRate = 0;
         }
 
+        // only needs to be in fixed update for the heating/cooling rate. Would be nice if I could calc that directly from fluxs
         public void FixedUpdate()
         {
             if (!HighLogic.LoadedSceneIsFlight || vessel.HoldPhysics)
                 return;
 
-            internalRate = internalRate * 0.9 + 0.1 * (part.temperature - lastIntTemp) / TimeWarp.fixedDeltaTime;
+            internalRate *= 0.9;
+            internalRate += 0.1 * (part.temperature - lastIntTemp) / TimeWarp.fixedDeltaTime;
             lastIntTemp = part.temperature;
 
-            skinRate = skinRate * 0.99 + 0.01 * (part.skinTemperature - lastSkinTemp) / TimeWarp.fixedDeltaTime;
+            skinRate *= 0.99;
+            skinRate += 0.01 * (part.skinTemperature - lastSkinTemp) / TimeWarp.fixedDeltaTime;
             lastSkinTemp = part.skinTemperature;
 
             temp = string.Format("{0:0.00}K | Skin: {1:0.00}K", part.temperature, part.skinTemperature);
