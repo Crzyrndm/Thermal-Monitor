@@ -9,12 +9,9 @@ namespace Thermal_Monitor
 {
     public class ThermalMonitor : PartModule
     {
-        [KSPField(guiName = "Therm Data", guiActiveEditor = false, guiActive = true),
-            UI_Toggle(affectSymCounterparts = UI_Scene.Flight, scene = UI_Scene.Flight, enabledText = "Visible", disabledText = "Hidden")]
-        bool fieldsVisible;
-        [KSPField(guiActive = false, guiActiveEditor = false, guiName = "Part")]
+        [KSPField(guiActive = true, guiActiveEditor = false, guiName = "Part")]
         public string temp;
-        [KSPField(guiActive = false, guiActiveEditor = false, guiName = "Part")]
+        [KSPField(guiActive = true, guiActiveEditor = false, guiName = "Part")]
         public string heatingRate;
         [KSPField(guiActive = false, guiActiveEditor = false, guiName = "Core")]
         public string coreTemp;
@@ -22,28 +19,15 @@ namespace Thermal_Monitor
         ModuleCoreHeat coreModule;
         double lastSkinTemp, lastIntTemp, lastCoreTemp;
         double skinRate, internalRate, coreRate;
-        bool fieldsWasVisible;
 
         public void Start()
         {
             StartCoroutine(InitValues());
             coreModule = part.Modules.GetModules<ModuleCoreHeat>().FirstOrDefault();
+            if (coreModule != null)
+                Fields["coreTemp"].guiActive = true;
         }
-
-        // update monitors the toggle state
-        // why didn't I do this with an event? Should check that
-        public void Update()
-        {
-            if (fieldsVisible != fieldsWasVisible)
-            {
-                fieldsWasVisible = fieldsVisible;
-                Fields["temp"].guiActive = fieldsVisible;
-                Fields["heatingRate"].guiActive = fieldsVisible;
-                if (coreModule != null)
-                    Fields["coreTemp"].guiActive = fieldsVisible;
-            }
-        }
-
+        
         /// <summary>
         /// Make it so values don't start from zero causing a few seconds of unreliable output
         /// </summary>
